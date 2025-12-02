@@ -1,22 +1,28 @@
 package com.santech.mtm.service;
 
-import com.santech.mtm.model.UserApp;
+import com.santech.mtm.dto.UserDTO;
+import com.santech.mtm.exception.UserAlreadyActiveException;
+import com.santech.mtm.exception.UserAlreadyInactiveException;
+import com.santech.mtm.exception.UserNotFoundException;
+import com.santech.mtm.exception.InvalidPassword;
 import com.santech.mtm.dto.LoginRequest;
+
+import java.util.List;
 
 public interface UserService {
 
-    UserApp findAllUsers();
+    List<UserDTO> findAllUsers();
 
-    UserApp findUserById(Long id);
+    UserDTO findUserById(Long id) throws UserNotFoundException;
 
-    UserApp findUserByEmail(String email);
+    UserDTO findUserByEmail(String email) throws UserNotFoundException;
 
-    UserApp createUser(UserApp user);
+    UserDTO createUser(UserDTO user) throws UserAlreadyActiveException;
 
-    UserApp authenticateUser(LoginRequest request);
+    UserDTO authenticateUser(LoginRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPassword;
 
-     void softDeleteUser(Long id);
+     void softDeleteUser(Long id) throws UserNotFoundException, UserAlreadyInactiveException;
 
-    UserApp reactivateUser(Long id);
+    UserDTO reactivateUser(Long id) throws UserNotFoundException, UserAlreadyActiveException;
 
 }
