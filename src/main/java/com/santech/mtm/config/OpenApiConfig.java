@@ -29,6 +29,7 @@ public class OpenApiConfig {
                 .externalDocs(new ExternalDocumentation()
                         .description("Swagger/OpenAPI Reference")
                         .url("https://swagger.io/docs/"))
-                .addTagsItem(new Tag().name("Users").description("Manage user accounts"));
+                .addTagsItem(new Tag().name("Users").description("Manage user accounts"))
+                .addTagsItem(new Tag().name("Tasks").description("Manage user tasks"));
     }
 }
