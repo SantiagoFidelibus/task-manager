@@ -33,6 +33,6 @@ public class UserApp {
     @Column(nullable=false)
     private boolean active=true;
 
-    @OneToMany(mappedBy = "userApp", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 }
