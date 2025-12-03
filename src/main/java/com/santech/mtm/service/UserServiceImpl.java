@@ -107,6 +107,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(user);
     }
 
+    @Override
+    @Transactional
+    public UserDTO updateUser(Long id, UserDTO user) throws UserNotFoundException, UserAlreadyInactiveException {
+        log.info("Actualizando usuario con id {}", id);
+        UserApp existing = createUpdatedUser(findActiveUserOrThrow(Optional.of(id),Optional.empty()),user);
+        userRepository.save(existing);
+        return userMapper.toDTO(existing);
+    }
+
     private UserApp findActiveUserOrThrow(Optional<Long> id, Optional<String> email) throws UserNotFoundException, UserAlreadyInactiveException {
         if (id.isEmpty() && email.isEmpty()) {
             throw new IllegalArgumentException("Debe especificarse id o email");
@@ -137,6 +146,14 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyActiveException("El usuario ya está activo");
         }
         return user;
+    }
+
+    private UserApp createUpdatedUser(UserApp oldUser, UserDTO newUser) {
+        oldUser.setName(newUser.getName());
+        oldUser.setLastname(newUser.getLastname());
+        oldUser.setEmail(newUser.getEmail());
+        oldUser.setPassword(newUser.getPassword());
+        return oldUser;
     }
 
 }

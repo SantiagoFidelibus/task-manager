@@ -81,6 +81,14 @@ public class TaskController {
 
     @Operation(summary = "Update a task")
     @ApiResponse(responseCode = "200", description = "Task updated")
+    @ApiResponse(
+            responseCode = "400",
+            description = "Validation fail",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"error\": \"Invalid input data\" }")
+            )
+    )
     @ApiResponse(responseCode = "404", description = "Task not found")
     @InternalServerErrorResponse
     @PutMapping("/{id}")

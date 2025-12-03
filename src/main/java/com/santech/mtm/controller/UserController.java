@@ -2,13 +2,13 @@ package com.santech.mtm.controller;
 
 import com.santech.mtm.dto.LoginRequest;
 import com.santech.mtm.dto.UserDTO;
-import com.santech.mtm.exception.UserAlreadyActiveException;
-import com.santech.mtm.exception.UserAlreadyInactiveException;
-import com.santech.mtm.exception.UserNotFoundException;
-import com.santech.mtm.exception.InvalidPasswordException;
+import com.santech.mtm.exception.*;
+
 import com.santech.mtm.service.UserService;
 import com.santech.mtm.swagger.InternalServerErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,6 +71,25 @@ public class UserController{
 
         UserDTO created = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @Operation(summary = "Update a user")
+    @ApiResponse(responseCode = "200", description = "User updated")
+    @ApiResponse(
+            responseCode = "400",
+            description = "Validation fail",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(value = "{ \"error\": \"Invalid input data\" }")
+            )
+    )
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @ApiResponse(responseCode = "409", description = "User already inactive")
+    @InternalServerErrorResponse
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserDTO dto) throws UserNotFoundException, UserAlreadyInactiveException {
+        UserDTO updated = userService.updateUser(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @ApiResponse(responseCode = "200", description = "Session created")
