@@ -4,7 +4,7 @@ import com.santech.mtm.dto.UserDTO;
 import com.santech.mtm.exception.UserAlreadyActiveException;
 import com.santech.mtm.exception.UserAlreadyInactiveException;
 import com.santech.mtm.exception.UserNotFoundException;
-import com.santech.mtm.exception.InvalidPassword;
+import com.santech.mtm.exception.InvalidPasswordException;
 import com.santech.mtm.dto.LoginRequest;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface UserService {
 
     UserDTO createUser(UserDTO user) throws UserAlreadyActiveException;
 
-    UserDTO authenticateUser(LoginRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPassword;
+    UserDTO authenticateUser(LoginRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPasswordException;
 
      void softDeleteUser(Long id) throws UserNotFoundException, UserAlreadyInactiveException;
 

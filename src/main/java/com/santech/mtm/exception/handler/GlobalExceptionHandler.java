@@ -1,5 +1,6 @@
 package com.santech.mtm.exception.handler;
 
+import com.santech.mtm.exception.InvalidPasswordException;
 import com.santech.mtm.exception.UserAlreadyActiveException;
 import com.santech.mtm.exception.UserAlreadyInactiveException;
 import com.santech.mtm.exception.UserNotFoundException;
@@ -35,14 +36,9 @@ public class GlobalExceptionHandler {
                     examples = @ExampleObject(value = "12345678 != password")
             )
     )
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidPassword(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .toList();
-        log.warn("400 Validation failed. errors" + errors);
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPassword(InvalidPasswordException ex) {
+        log.warn("400 Validation failed. errors" + ex.getMessage());
         return ResponseEntity.badRequest().body(this.errorMsg(ex.getMessage()));
 
     }

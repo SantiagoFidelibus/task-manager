@@ -2,7 +2,7 @@ package com.santech.mtm.service;
 
 import com.santech.mtm.dto.LoginRequest;
 import com.santech.mtm.dto.UserDTO;
-import com.santech.mtm.exception.InvalidPassword;
+import com.santech.mtm.exception.InvalidPasswordException;
 import com.santech.mtm.exception.UserNotFoundException;
 import com.santech.mtm.exception.UserAlreadyActiveException;
 import com.santech.mtm.exception.UserAlreadyInactiveException;
@@ -76,13 +76,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO authenticateUser(LoginRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPassword {
+    public UserDTO authenticateUser(LoginRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPasswordException {
         log.info("Intentando autenticar usuario con email: {}", request.getEmail());
         UserApp user = findActiveUserOrThrow(Optional.empty(), Optional.of(request.getEmail()));
 
         if(!user.getPassword().equals(request.getPassword())){
             log.warn("Contraseña incorrecta para el usuario {}", request.getEmail());
-            throw new InvalidPassword("La contraseña ingresada es invalida");
+            throw new InvalidPasswordException("La contraseña ingresada es invalida");
         }
         log.info("Usuario autenticado correctamente: {}", request.getEmail());
         return userMapper.toDTO(user);
