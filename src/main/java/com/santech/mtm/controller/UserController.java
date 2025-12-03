@@ -5,7 +5,7 @@ import com.santech.mtm.dto.UserDTO;
 import com.santech.mtm.exception.UserAlreadyActiveException;
 import com.santech.mtm.exception.UserAlreadyInactiveException;
 import com.santech.mtm.exception.UserNotFoundException;
-import com.santech.mtm.exception.InvalidPassword;
+import com.santech.mtm.exception.InvalidPasswordException;
 import com.santech.mtm.service.UserService;
 import com.santech.mtm.swagger.InternalServerErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,7 +78,7 @@ public class UserController{
     @PostMapping("/login")
     public ResponseEntity<String> login  (@Valid
             @RequestBody LoginRequest loginRequest,
-            HttpServletRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPassword {
+            HttpServletRequest request) throws UserNotFoundException, UserAlreadyInactiveException, InvalidPasswordException {
 
         UserDTO user = userService.authenticateUser(loginRequest);
 
