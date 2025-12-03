@@ -13,9 +13,9 @@ public interface UserService {
 
     List<UserDTO> findAllUsers();
 
-    UserDTO findUserById(Long id) throws UserNotFoundException;
+    UserDTO findUserById(Long id) throws UserNotFoundException, UserAlreadyInactiveException;
 
-    UserDTO findUserByEmail(String email) throws UserNotFoundException;
+    UserDTO findUserByEmail(String email) throws UserNotFoundException, UserAlreadyInactiveException;
 
     UserDTO createUser(UserDTO user) throws UserAlreadyActiveException;
 
