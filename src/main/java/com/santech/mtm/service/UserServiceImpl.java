@@ -36,31 +36,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findUserById(Long id) throws UserNotFoundException{
-        return userRepository.findByIdAndActiveTrue(id)
-                .map(userMapper::toDTO)
-                .orElseThrow(()-> new UserNotFoundException("Error, no hay usuario activo con el id: "+ id));
+    public UserDTO findUserById(Long id) throws UserNotFoundException, UserAlreadyInactiveException{
+        return userMapper.toDTO(
+                findActiveUserOrThrow(Optional.of(id),Optional.empty() )
+        );
     }
 
     @Override
-    public UserDTO findUserByEmail(String email) throws UserNotFoundException{
-        return userRepository.findByEmailAndActiveTrue(email)
-                .map(userMapper::toDTO)
-                .orElseThrow(()-> new UserNotFoundException("Error, no hay usuario activo con el email: "+ email));
+    public UserDTO findUserByEmail(String email) throws UserNotFoundException, UserAlreadyInactiveException{
+
+        return userMapper.toDTO(
+                findActiveUserOrThrow(Optional.empty(), Optional.of(email))
+        );
+
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) throws UserAlreadyActiveException{
+    public UserDTO createUser(UserDTO userDTO) throws UserAlreadyActiveException {
+        Optional<UserApp> existingUserOpt = userRepository.findByEmail(userDTO.getEmail());
 
-        if (userRepository.findByEmailAndActiveTrue(userDTO.getEmail()).isPresent()) {
-            throw new UserAlreadyActiveException("El usuario ya se encuentra activo");
+        if (existingUserOpt.isPresent()) {
+            UserApp existing = existingUserOpt.get();
+
+            if (existing.isActive()) {
+                throw new UserAlreadyActiveException("El usuario con ese email ya se encuentra activo");
+            }
+
+            existing.setActive(true);
+
+            userRepository.save(existing);
+
+            return userMapper.toDTO(existing);
         }
-        UserApp user = userMapper.toEntity(userDTO);
+        UserApp newUser = userMapper.toEntity(userDTO);
+        newUser.setActive(true);
+        userRepository.save(newUser);
 
-        user.setActive(true);
-
-        UserApp savedUser = userRepository.save(user);
-        return userMapper.toDTO(savedUser);
+        return userMapper.toDTO(newUser);
     }
 
     @Override
@@ -93,36 +105,28 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserApp findActiveUserOrThrow(Optional<Long> id, Optional<String> email) throws UserNotFoundException, UserAlreadyInactiveException {
-        UserApp user;
-       if(id.isPresent()){
-            user = id.flatMap(userRepository::findById)
-                   .orElseThrow(() -> new UserNotFoundException("No existe usuario con id: " + id));
+        if (id.isEmpty() && email.isEmpty()) {
+            throw new IllegalArgumentException("Debe especificarse id o email");
+        }
 
-           if (!user.isActive()) {
-               throw new UserAlreadyInactiveException("El usuario existe pero está inactivo");
-           }
+        UserApp user = id.map(userRepository::findById)
+                .orElseGet(() -> email.flatMap(userRepository::findByEmail))
+                .orElseThrow(() -> new UserNotFoundException("No existe el usuario que está buscando"));
 
-           return user;
+        if (!user.isActive()) {
+            throw new UserAlreadyInactiveException("El usuario existe pero está inactivo");
+        }
 
-       }
-       if(email.isPresent()){
-           user =  email.flatMap(userRepository::findByEmail).orElseThrow(
-                   () -> new UserNotFoundException("No existe usuario con email: " + email)
-           );
-
-           if (!user.isActive()) {
-               throw new UserAlreadyInactiveException("El usuario existe pero está inactivo");
-           }
-
-           return user;
-       }
-       else{
-           throw new IllegalArgumentException("Ambos argumentos eran nulos");
-       }
-
+        return user;
     }
 
+
+
     private UserApp findInactiveUserOrThrow(Long id) throws UserNotFoundException,UserAlreadyActiveException {
+        if (id == null) {
+            throw new IllegalArgumentException("Debe especificarse id o email");
+        }
+
         UserApp user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("No existe usuario con id " + id)
         );
