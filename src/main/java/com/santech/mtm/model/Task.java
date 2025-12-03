@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
         indexes = {
                 @Index(name = "idx_task_has_finished", columnList = "hasFinished"),
                 @Index(name = "idx_task_end_date", columnList = "endDate"),
-                @Index(name = "idx_task_owner", columnList = "user_id")
+                @Index(name = "idx_task_owner", columnList = "owner")
         }
 )
 @EntityListeners(AuditingEntityListener.class)
@@ -47,7 +47,7 @@ public class Task {
     private boolean hasFinished = false;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "owner", nullable = false)
     private UserApp owner;
 
     @Column(nullable = false)
