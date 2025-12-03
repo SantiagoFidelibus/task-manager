@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
+import java.util.ArrayList;
+
 
 @Entity
 @Getter
@@ -30,5 +33,6 @@ public class UserApp {
     @Column(nullable=false)
     private boolean active=true;
 
-
+    @OneToMany(mappedBy = "userApp", fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
 }

@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO createUser(UserDTO userDTO) throws UserAlreadyActiveException {
         Optional<UserApp> existingUserOpt = userRepository.findByEmail(userDTO.getEmail());
 
@@ -89,6 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void softDeleteUser(Long id) throws UserNotFoundException, UserAlreadyInactiveException {
         UserApp user = findActiveUserOrThrow(Optional.of(id), Optional.empty());
         user.setActive(false);
@@ -96,6 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO reactivateUser(Long id) throws UserNotFoundException, UserAlreadyActiveException{
         UserApp user = findInactiveUserOrThrow(id);
         user.setActive(true);

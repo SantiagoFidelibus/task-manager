@@ -1,9 +1,6 @@
 package com.santech.mtm.exception.handler;
 
-import com.santech.mtm.exception.InvalidPasswordException;
-import com.santech.mtm.exception.UserAlreadyActiveException;
-import com.santech.mtm.exception.UserAlreadyInactiveException;
-import com.santech.mtm.exception.UserNotFoundException;
+import com.santech.mtm.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -22,11 +19,6 @@ import java.util.Map;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
-    /*
-    UserActive -> 409
-    UserInactive -> 409
-     */
 
     @ApiResponse(
             responseCode = "400",
@@ -73,6 +65,21 @@ public class GlobalExceptionHandler {
     )
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleUserNotFound(UserNotFoundException ex) {
+        log404(ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(this.errorMsg(ex.getMessage()));
+    }
+
+    @ApiResponse(
+            responseCode = "404",
+            description = "Task not found",
+            content = @Content(
+                    schema = @Schema(implementation = String.class),
+                    examples = @ExampleObject(value = "Task with id 1 does not exist or is inactive.")
+            )
+    )
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleTaskNotFound(TaskNotFoundException ex) {
         log404(ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(this.errorMsg(ex.getMessage()));
