@@ -25,4 +25,8 @@ public interface UserService {
 
     UserDTO reactivateUser(Long id) throws UserNotFoundException, UserAlreadyActiveException;
 
+    /*
+        TODO:
+         update user
+     */
 }
